@@ -1,15 +1,35 @@
 package app.model;
 
+import java.util.List;
+
 public class AutoMLModel {
 
-	private long id;
+	private String id;
 	private String content;
+	private boolean hasResult;
+	private List<String> result;
 
-	public long getId() {
+	public boolean hasResult() {
+		return hasResult;
+	}
+
+	public void setHasResult(boolean hasResult) {
+		this.hasResult = hasResult;
+	}
+
+	public List<String> getResult() {
+		return result;
+	}
+
+	public void setResult(List<String> result) {
+		this.result = result;
+	}
+
+	public String getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

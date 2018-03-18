@@ -1,19 +1,26 @@
 package app.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import app.model.AutoMLModel;
+import core.AutoMLClassifier;
+import util.SerializationUtil;
+import weka.classifiers.Classifier;
 
 @Controller
 public class AutoMLController {
@@ -25,8 +32,44 @@ public class AutoMLController {
 		return "autoML";
 	}
 
-	@PostMapping("/form")
-	public String formSubmit(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
+	@PostMapping("/train")
+	public String submitTrain(@ModelAttribute AutoMLModel model, @RequestParam("file") MultipartFile file,
+			RedirectAttributes redirectAttributes) throws Exception {
+
+		String id = UUID.randomUUID().toString().replace("-", "").substring(0, 10).toUpperCase();
+		model.setId(id);
+
+		if (file.isEmpty()) {
+			return "result";
+		}
+
+		try {
+			String folderPath = UPLOADED_FOLDER + id + File.separator;
+
+			File directory = new File(folderPath);
+			if (!directory.exists()) {
+				directory.mkdir();
+			}
+
+			byte[] bytes = file.getBytes();
+			Path path = Paths.get(folderPath + "train.csv");
+			Files.write(path, bytes);
+
+			AutoMLClassifier aml = new AutoMLClassifier();
+			Classifier classifier = aml.train(path.toString());
+
+			SerializationUtil.write(folderPath, classifier);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return "autoML";
+	}
+
+	@PostMapping("/test/{id}")
+	public String submitTest(@ModelAttribute AutoMLModel model, @RequestParam("file") MultipartFile file,
+			RedirectAttributes redirectAttributes) throws Exception {
 
 		if (file.isEmpty()) {
 			return "result";
@@ -34,15 +77,35 @@ public class AutoMLController {
 
 		try {
 
+			String folderPath = UPLOADED_FOLDER + model.getId() + File.separator;
+
+			File directory = new File(folderPath);
+			if (!directory.exists()) {
+				return "result";
+			}
+
 			byte[] bytes = file.getBytes();
-			Path path = Paths.get(UPLOADED_FOLDER + file.getOriginalFilename());
+			Path path = Paths.get(folderPath + "test.csv");
 			Files.write(path, bytes);
+
+			Classifier classifier = SerializationUtil.read(folderPath);
+			AutoMLClassifier aml = new AutoMLClassifier();
+			List<String> result = aml.predict(classifier, folderPath + "train.csv", folderPath + "test.csv");
+			model.setHasResult(true);
+			model.setResult(result);
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		return "result";
+		return "autoML";
+	}
+
+	@GetMapping("/test/{id}")
+	public String displayTest(@ModelAttribute AutoMLModel model, RedirectAttributes redirectAttributes)
+			throws Exception {
+
+		return "autoML";
 	}
 
 }
