@@ -20,7 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import app.model.AutoMLModel;
 import core.AutoMLClassifier;
 import util.SerializationUtil;
-import weka.classifiers.Classifier;
+import weka.classifiers.trees.RandomForest;
 
 @Controller
 public class AutoMLController {
@@ -48,7 +48,7 @@ public class AutoMLController {
 
 			File directory = new File(folderPath);
 			if (!directory.exists()) {
-				directory.mkdir();
+				directory.mkdirs();
 			}
 
 			byte[] bytes = file.getBytes();
@@ -56,7 +56,7 @@ public class AutoMLController {
 			Files.write(path, bytes);
 
 			AutoMLClassifier aml = new AutoMLClassifier();
-			Classifier classifier = aml.train(path.toString());
+			RandomForest classifier = aml.train(path.toString());
 
 			SerializationUtil.write(folderPath, classifier);
 
@@ -88,7 +88,7 @@ public class AutoMLController {
 			Path path = Paths.get(folderPath + "test.csv");
 			Files.write(path, bytes);
 
-			Classifier classifier = SerializationUtil.read(folderPath);
+			RandomForest classifier = SerializationUtil.read(folderPath);
 			AutoMLClassifier aml = new AutoMLClassifier();
 			List<String> result = aml.predict(classifier, folderPath + "train.csv", folderPath + "test.csv");
 			model.setHasResult(true);

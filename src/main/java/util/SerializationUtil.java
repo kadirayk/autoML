@@ -8,14 +8,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import weka.classifiers.Classifier;
+import weka.classifiers.trees.RandomForest;
 
 public class SerializationUtil {
 
 	private SerializationUtil() {
 	}
 
-	public static void write(String path, Classifier classifier) {
+	public static void write(String path, RandomForest classifier) {
 		String filePath = path + File.separator + "classifier";
 		try (FileOutputStream f = new FileOutputStream(new File(filePath));
 				ObjectOutputStream o = new ObjectOutputStream(f)) {
@@ -27,12 +27,12 @@ public class SerializationUtil {
 		}
 	}
 
-	public static Classifier read(String path) {
+	public static RandomForest read(String path) {
 		String filePath = path + File.separator + "classifier";
-		Classifier classifier = null;
+		RandomForest classifier = null;
 		try (FileInputStream f = new FileInputStream(new File(filePath));
 				ObjectInputStream o = new ObjectInputStream(f)) {
-			classifier = (Classifier) o.readObject();
+			classifier = (RandomForest) o.readObject();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

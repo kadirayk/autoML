@@ -3,7 +3,6 @@ package core;
 import java.util.ArrayList;
 import java.util.List;
 
-import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.evaluation.Prediction;
 import weka.classifiers.trees.RandomForest;
@@ -12,7 +11,7 @@ import weka.core.converters.ConverterUtils.DataSource;
 
 public class AutoMLClassifier {
 
-	public Classifier train(String trainFilePath) throws Exception {
+	public RandomForest train(String trainFilePath) throws Exception {
 		Instances trainData = getInstances(trainFilePath);
 
 		String[] options = new String[1];
@@ -25,7 +24,7 @@ public class AutoMLClassifier {
 
 	}
 
-	public List<String> predict(Classifier classifier, String trainFilePath, String testFilePath) throws Exception {
+	public List<String> predict(RandomForest classifier, String trainFilePath, String testFilePath) throws Exception {
 		Instances trainData = getInstances(trainFilePath);
 		Instances testData = getInstances(testFilePath);
 
@@ -58,7 +57,7 @@ public class AutoMLClassifier {
 
 	public static void main(String[] args) throws Exception {
 		AutoMLClassifier ml = new AutoMLClassifier();
-		Classifier classifier = ml.train("Data/train.csv");
+		RandomForest classifier = ml.train("Data/train.csv");
 		System.out.println(ml.predict(classifier, "Data/train.csv", "Data/test.csv"));
 	}
 
