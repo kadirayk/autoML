@@ -67,7 +67,7 @@ public class AutoMLController {
 		return "autoML";
 	}
 
-	@PostMapping("/test/{id}")
+	@PostMapping("/test")
 	public String submitTest(@ModelAttribute AutoMLModel model, @RequestParam("file") MultipartFile file,
 			RedirectAttributes redirectAttributes) throws Exception {
 
@@ -77,7 +77,7 @@ public class AutoMLController {
 
 		try {
 
-			String folderPath = UPLOADED_FOLDER + model.getId() + File.separator;
+			String folderPath = "grounding/";
 
 			File directory = new File(folderPath);
 			if (!directory.exists()) {
