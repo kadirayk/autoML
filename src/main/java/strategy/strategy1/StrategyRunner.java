@@ -30,7 +30,7 @@ public class StrategyRunner {
 			System.exit(1);
 		}
 
-		File trainFileInStrategy = new File("output/train.csv");
+		File trainFileInStrategy = new File("output/" + trainFile.getName());
 
 		Files.copy(trainFile.toPath(), trainFileInStrategy.toPath());
 

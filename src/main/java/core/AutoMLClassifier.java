@@ -57,8 +57,8 @@ public class AutoMLClassifier {
 
 	public static void main(String[] args) throws Exception {
 		AutoMLClassifier ml = new AutoMLClassifier();
-		RandomForest classifier = ml.train("Data/train.csv");
-		System.out.println(ml.predict(classifier, "Data/train.csv", "Data/test.csv"));
+		RandomForest classifier = ml.train("Data/train");
+		System.out.println(ml.predict(classifier, "Data/train.arff", "Data/test"));
 	}
 
 }

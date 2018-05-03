@@ -52,7 +52,9 @@ public class AutoMLController {
 			}
 
 			byte[] bytes = file.getBytes();
-			Path path = Paths.get(folderPath + "train.csv");
+			String trainFileName = file.getOriginalFilename();
+			String fileExtension = trainFileName.split("\\.")[1];
+			Path path = Paths.get(folderPath + "train." + fileExtension);
 			Files.write(path, bytes);
 
 			AutoMLClassifier aml = new AutoMLClassifier();
@@ -85,12 +87,15 @@ public class AutoMLController {
 			}
 
 			byte[] bytes = file.getBytes();
-			Path path = Paths.get(folderPath + "test.csv");
+			String testFileName = file.getOriginalFilename();
+			Path path = Paths.get(folderPath + testFileName);
 			Files.write(path, bytes);
+
+			String trainFileName = getTrainFilePath(folderPath);
 
 			RandomForest classifier = SerializationUtil.read(folderPath);
 			AutoMLClassifier aml = new AutoMLClassifier();
-			List<String> result = aml.predict(classifier, folderPath + "train.csv", folderPath + "test.csv");
+			List<String> result = aml.predict(classifier, folderPath + trainFileName, folderPath + testFileName);
 			model.setHasResult(true);
 			model.setResult(result);
 
@@ -99,6 +104,18 @@ public class AutoMLController {
 		}
 
 		return "autoML";
+	}
+
+	private String getTrainFilePath(String folderPath) {
+		File folder = new File(folderPath);
+		for (final File fileEntry : folder.listFiles()) {
+			if (fileEntry.isFile()) {
+				if (fileEntry.getName().contains("train")) {
+					return fileEntry.getName();
+				}
+			}
+		}
+		return null;
 	}
 
 	@GetMapping("/test/{id}")
