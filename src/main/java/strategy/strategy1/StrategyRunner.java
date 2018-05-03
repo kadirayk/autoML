@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Files;
 
 import core.AutoMLClassifier;
+import model.Interview;
 import util.SerializationUtil;
 import weka.classifiers.trees.RandomForest;
 
@@ -11,7 +12,16 @@ public class StrategyRunner {
 
 	public static void main(String[] args) throws Exception {
 
-		String trainFilePath = "../../interview_data/interview_resources/train.csv";
+		Interview interview = SerializationUtil.readAsJSON("../../interview_data/");
+
+		String trainFilePath = interview.getQuestionByPath("step1.q1").getAnswer();
+		int relativePathIndex = trainFilePath.indexOf("interview_data");
+		trainFilePath = trainFilePath.substring(relativePathIndex);
+		trainFilePath = "../../" + trainFilePath;
+
+		System.out.println("trainFilePath: " + trainFilePath);
+
+		// "../../interview_data/interview_resources/train.csv";
 
 		File trainFile = new File(trainFilePath);
 
