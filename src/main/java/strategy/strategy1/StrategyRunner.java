@@ -30,7 +30,10 @@ public class StrategyRunner {
 			System.exit(1);
 		}
 
-		File trainFileInStrategy = new File("output/" + trainFile.getName());
+		int indexOfExtension = trainFilePath.lastIndexOf(".");
+		String fileExtension = trainFilePath.substring(indexOfExtension);
+
+		File trainFileInStrategy = new File("output/" + "train" + fileExtension);
 
 		Files.copy(trainFile.toPath(), trainFileInStrategy.toPath());
 
@@ -44,6 +47,15 @@ public class StrategyRunner {
 			Thread.sleep(1000);
 		}
 		System.out.println("Strategy is ready");
+	}
+
+	private static String renameTrainFile(String filePath) {
+		int indexOfExtension = filePath.lastIndexOf(".");
+		String fileExtension = filePath.substring(indexOfExtension);
+		int indexOfLastFolder = filePath.lastIndexOf("/") > filePath.lastIndexOf("\\") ? filePath.lastIndexOf("/")
+				: filePath.lastIndexOf("\\");
+		String fullPath = filePath.substring(0, indexOfLastFolder);
+		return fullPath + "/train" + fileExtension;
 	}
 
 }
